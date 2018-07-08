@@ -62,6 +62,24 @@ function sederhana1($keyword) {
 	$result = "HELLO PETTER";
     return $result;
 }
+function leaveRoom($Id,$type) {
+    $url = "https://api.line.me/v2/bot/".$type."/".$Id."/leave";
+    $headers = array("Authorization: Bearer <CHANNEL_ACCESS_TOKEN_KAMU>");
+    $ch = curl_init($url);
+    
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt_array($ch, array(
+           CURLOPT_URL=> $url,
+           CURLOPT_TIMEOUT => 30,
+           CURLOPT_POST => 1,
+           CURLOPT_RETURNTRANSFER => 1,
+           CURLOPT_HTTPHEADER => $headers
+        ));    
+    $response = curl_exec($ch);
+    curl_close($ch);
+}
 #-------------------------[Function]-------------------------#
 
 //show menu, saat join dan command /menu
@@ -149,7 +167,34 @@ if($message['type']=='text') {
 			)
 		);
 	}
-	
+	if ($command == '/bye') {
+	if($groupId) {
+	$type = "group";
+	$Id = $groupId;	
+    $bye = array(
+        'replyToken' => $replyToken, 
+        'messages' => array( 
+            array(  
+                'type' => 'text', 
+                'text' => "Dadah ^_^"
+            )
+        )
+    ); } 
+	elseif($roomId) {
+	$type = "room";
+	$Id = $roomId;
+    $bye = array(
+        'replyToken' => $replyToken, 
+        'messages' => array( 
+            array(  
+                'type' => 'text', 
+                'text' => "Dadah ^_^"
+            )
+        )
+    ); }
+    $client->replyMessage($bye);
+    return leaveRoom($Id,$type);
+}
 	if ($command == 'yes') {
 		
 		$result = sederhana($options);
